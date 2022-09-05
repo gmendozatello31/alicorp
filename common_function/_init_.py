@@ -1,2 +1,2 @@
 from common_function.general_functions import *
-from common_function.sample2 import *
+from common_function.generral_test import *
