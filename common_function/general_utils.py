@@ -1,5 +1,5 @@
 # Databricks notebook source
-######## import 
+######## import
 from datetime import datetime,timedelta
 from delta.tables import *
 from pyspark.sql import DataFrame
@@ -10,19 +10,19 @@ from email.mime.text import MIMEText
 from google.cloud import storage
 from pyspark.sql.types import  *
 import os,requests,json,base64,time,smtplib
-import pyspark.sql.functions as f 
+import pyspark.sql.functions as f
 import yaml as yml
 
 
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
-    #definicion :  
+    #definicion :
     #    Metodo que retonar el maximo valor del archivo que se encuentra en el storage
     #Parameters:
     #    str1 (str): ruta donde buscara la maxima fecha
     #Returns:
     #    dict : diccionario con nombre,fecha en date y string
-    
+
     # valor inicial de busqueda
     val= datetime(1999,1,1,0,0,0)
     list=[]
@@ -41,20 +41,20 @@ def max_file_storage (path_storage:str)-> dict:
 
 ######## funcion setup_logging
 def date_process(var:str)->str:
-     #definicion :  
-    #    Metodo para guardar e imprimir los logs 
+     #definicion :
+    #    Metodo para guardar e imprimir los logs
     #Parameters:
-    #    
+    #
     #Returns:
     #    dict : diccionario con nombre,fecha en date y string
-    
+
     now = datetime.now()
     date_now=now-timedelta(hours=5)
 
     year = '{:02d}'.format(date_now.year)
     month = '{:02d}'.format(date_now.month)
     day = '{:02d}'.format(date_now.day)
-    
+
     if var == 'yyyymm':
         current = '{}{}'.format(year,month)
     elif var == 'yyyy' :
@@ -63,6 +63,6 @@ def date_process(var:str)->str:
         current = '{}{}{}'.format(year,month,day)
     elif var=='yyyymmddhhmmss':
         current = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-    
+
     #current='20211019'
     return current
