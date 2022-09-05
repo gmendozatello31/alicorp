@@ -1,5 +1,5 @@
-from common_function.generral_test import cube_root
-from common_function.general_functions import max_file_storage
+from common_function.general_test import cube_root
+from common_function.general_utils import max_file_storage
 
 cube_root(8)
 
