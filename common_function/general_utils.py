@@ -3,12 +3,12 @@
 from datetime import datetime,timedelta
 from pyspark.sql import SparkSession
 from delta.tables import *
-from pyark.sql.types import  *
-from pyark.dbutils import dBUtils
+from pyspark.sql.types import *
+from pyspark.dbutils import BUtils
 import time
 
-spapk = SparkSession.builder.getOrCreate()
-dbutils = dBUtils(spapk)
+spark = SparkSession.builder.getOrCreate()
+dbutils = BUtils(spark)
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
     #definicion :
