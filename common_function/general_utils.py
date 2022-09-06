@@ -1,19 +1,14 @@
 # Databricks notebook source
 ######## import
 from datetime import datetime,timedelta
+from pyspark.sql import SparkSession
 from delta.tables import *
-from pyspark.sql import DataFrame
-from typing import List
-from google.cloud import secretmanager
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from google.cloud import storage
-from pyspark.sql.types import  *
-import os,requests,json,base64,time,smtplib
-import pyspark.sql.functions as f
-import yaml as yml
+from pyark.sql.types import  *
+from pyark.dbutils import dBUtils
+import time
 
-
+spapk = SparkSession.builder.getOrCreate()
+dbutils = dBUtils(spapk)
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
     #definicion :
