@@ -3,29 +3,11 @@
 
 # COMMAND ----------
 
-# MAGIC %run ../cssssssssssssssssssssssssssssssssssssssssssssssssssssssssss/utils
+# MAGIC %run ../config/config
 
 # COMMAND ----------
 
-import sys
-sys.path.append("Worspace/Repos/main/alicorp")
-print(sys.path)
-
-# COMMAND ----------
-
-import json
-
-# JSON file
-f = open ('config.json', "r")
-#Reading from file
-data = json.loads(f.read())
-# Iterating through the json
-# list
-for i in data['emp_details']:#
-	print(i)
-#Closing file
-f.close()
-
+list_table=conf_json()
 
 # COMMAND ----------
 
