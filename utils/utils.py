@@ -13,31 +13,6 @@ import pyspark.sql.functions as f
 import yaml as yml
 import logging
 
-######## funcion save datos delta
-def max_file_storage (path_storage:str)-> dict:
-    """ 
-    definicion :  
-        Metodo que retonar el maximo valor del archivo que se encuentra en el storage
-    Parameters:
-        str1 (str): ruta donde buscara la maxima fecha
-    Returns:
-        dict : diccionario con nombre,fecha en date y string
-    """
-    # valor inicial de busqueda
-    val= datetime(1999,1,1,0,0,0)
-    list=[]
-    list = dbutils.fs.ls(path_storage)
-    for list_process_csv in range(len(list)):
-        name=list[list_process_csv][1]
-        # day = f'{name[0:4]}-{name[4:6]}-{name[6:8]} {name[9:11]}:{name[11:13]}:{name[13:15]}'
-        # date = datetime.strptime(day, '%Y-%m-%d %H:%M:%S')
-        day = f'{name[0:8]}'
-        date = datetime.strptime(day, '%Y%m%d')
-        filter = f'{name[0:15]}'
-        if date >= val:
-            val=date
-            dict_file = {'name': name,'day': day,'date':date,'filter':filter}
-    return dict_file
 
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
@@ -330,7 +305,39 @@ def read_yaml(bucket:str,file:str)-> yml:
     downloaded_yaml_file = yml.safe_load(blob.download_as_text(encoding="utf-8"))
     return downloaded_yaml_file 
   
+
+######## funcion save datos delta
+def save_delta (file_location_csv:str,name_file:str):
+    """ 
+    definicion :  
+        Metodo que retonar el maximo valor del archivo que se encuentra en el storage
+    Parameters:
+        str1 (str): ruta donde buscara la maxima fecha
+    Returns:
+        dict : diccionario con nombre,fecha en date y string
+    """
+    # valor inicial de busqueda
+
+    file_type = 'csv'
+    infer_schema = 'false'
+    first_row_is_header = 'true'
+    delimiter = ','
+    v_current = date_process('yyyymmddhhmmss')
     
+    df = spark.read.format(file_type) \
+        .option("inferSchema", infer_schema) \
+        .option("multiline", "true") \
+        .option("encoding", "utf8") \
+        .option("header", first_row_is_header) \
+        .option("sep", delimiter) \
+        .load(file_location_csv)
+
+    df = df \
+        .withColumn('CREATE_AT', f.unix_timestamp(f.lit(v_current), 'yyyy-MM-dd HH:mm:ss').cast("timestamp")) \
+        .withColumn('ORIGIN_FILE', f.lit(name_file))
+    return dict_file
+
+
 def validateColumns(df:DataFrame)->DataFrame:
     dfx = df
     for col_name in df.columns: 
