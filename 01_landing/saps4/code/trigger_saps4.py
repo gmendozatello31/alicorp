@@ -31,10 +31,12 @@ for table_landing in list_table :
         file_location_csv= f'{t_location}{name_file}'
         logger.info(f'file_location_csv : {file_location_csv} - name_file : {name_file}')
         df = read_df(file_location_csv,name_file,t_partition,t_table,logger)
+        existe = existe_table('landing',t_table)
+        logger.info(f'{existe}')
         
     except Exception as e:
         #Email("la capa Bronze de Customers_Hierarchy", str(e))
-        logger.info(f' Error : {t_table}')
+        logger.info(f'Error : {t_table}')
         
     
         
@@ -42,23 +44,12 @@ for table_landing in list_table :
 
 # COMMAND ----------
 
-list_columns = df.schema.names
+for col in df.dtypes:
+    print(col[0]+" , "+col[1])
 
 # COMMAND ----------
 
-from pyspark.sql import SQLContext
-sqlContext = SQLContext(spark.sparkContext)
-table_names_in_db = sqlContext.tableNames('landing')
+x = df.schema.names
 
-#for f in table_names_in_db :
-#    print(f)
-    
-table_exists = 'kna12' in table_names_in_db
-print(table_exists)
-
-# COMMAND ----------
-
-for f in list_columns :
-    print(f)
-    
-
+for a in x:
+    print(a)

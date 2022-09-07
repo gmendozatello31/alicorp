@@ -12,8 +12,17 @@ import os,requests,json,base64,time,smtplib
 import pyspark.sql.functions as f 
 import yaml as yml
 import logging
+from pyspark.sql import SQLContext
 
+sqlContext = SQLContext(spark.sparkContext)
 
+######## funcion max_file_storage
+def existe_table (dataBase:str,table:str)-> bool:
+    table_names_in_db = sqlContext.tableNames(dataBase)
+    table_exists = table in table_names_in_db
+    return table_exists
+    
+    
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
     """ 
