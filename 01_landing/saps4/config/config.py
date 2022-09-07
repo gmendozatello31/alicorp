@@ -1,9 +1,8 @@
 # Databricks notebook source
-print("****** conf_json  *********")
+import json 
+
 def conf_json ():
-    tables:'''
-    {
-        tables": [
+    json_file = '''
         { "name": "KNA1","partition_field": "d"},
         { "name": "KNVH","partition_field": "d"},
         { "name": "KNVV","partition_field": "d"},
@@ -111,8 +110,14 @@ def conf_json ():
         { "name": "KNVI","partition_field": "d"},
         { "name": "EKKO","partition_field": "d"},
         { "name": "EKPO","partition_field": "d"}
-      ]
-    }
     '''
-    
-    return json_file
+    list_table = json.loads(json_file)
+    return list_table
+
+
+print("****** conf_json  *********")
+
+# COMMAND ----------
+
+x=conf_json()
+print
