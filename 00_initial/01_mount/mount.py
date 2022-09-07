@@ -81,11 +81,6 @@ dbutils.fs.mount("gs://%s" % bucket_name, "/mnt/%s" % mount_name)
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC mount : output
-
-# COMMAND ----------
-
 #alicorp-databricks-dev-gcs
 import os
 bucket_name=os.environ['BUCKET_DATA_DEV']
