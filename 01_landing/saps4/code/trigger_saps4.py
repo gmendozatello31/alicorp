@@ -7,23 +7,22 @@
 
 # COMMAND ----------
 
+# Se obtiene la lista de tablas que se procesaran de raw to landing
 list_table=conf_json()
 
-# COMMAND ----------
+logger = init_logging("Landing")
 
-# Python program to read
-# json file
-import json
-# JSON string
-a = '''   { "tables": [ 
-                    {"name": "Bob", "languages": "English"} ,
-                    {"name": "Bob", "languages": "English"} 
-                    ] }
-    '''
-# deserializes into dict
-# and returns dict.
-y = json.loads(a)
-print("JSON string = ", y)
+for table_landing in list_table :    
+    columnsToSelect = (table_landing['partition_field'] + "-" + table_landing['name']).lower() 
+    logger.info(f'..procesando  Tabla:  {columnsToSelect}')
+    try:
+        # CAPA BRONZE
+        print("email")
+        #dbutils.notebook.run("./bronze_saps4", 10000,  {"tables_lst" : list_table})  ## json 
+    except Exception as e:
+        #Email("la capa Bronze de Customers_Hierarchy", str(e))
+        print("Error")
+        dbutils.notebook.exit(e)
+    
+        
 
-for i in y['tables']:#
-	print(i)

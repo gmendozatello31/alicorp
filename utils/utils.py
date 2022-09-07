@@ -11,18 +11,18 @@ from pyspark.sql.types import  *
 import os,requests,json,base64,time,smtplib
 import pyspark.sql.functions as f 
 import yaml as yml
+import logging
 
-print("****** Version Git *********")
 
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
-    #definicion :  
-    #    Metodo que retonar el maximo valor del archivo que se encuentra en el storage
-    #Parameters:
-    #    str1 (str): ruta donde buscara la maxima fecha
-    #Returns:
-    #    dict : diccionario con nombre,fecha en date y string
-    
+    """ definicion :  
+        Metodo que retonar el maximo valor del archivo que se encuentra en el storage
+    Parameters:
+        str1 (str): ruta donde buscara la maxima fecha
+    Returns:
+        dict : diccionario con nombre,fecha en date y string
+    """
     # valor inicial de busqueda
     val= datetime(1999,1,1,0,0,0)
     list=[]
@@ -40,31 +40,33 @@ def max_file_storage (path_storage:str)-> dict:
     return dict_file
 
 ######## funcion setup_logging
-def setup_logging():
-    #definicion :  
-    #    Metodo para guardar e imprimir los logs 
-    #Parameters:
-    #    
-    #Returns:
-    #    dict : diccionario con nombre,fecha en date y string
-    logger = logging.getLogger()
+def init_logging(name):
+    """ definicion : 
+        Init logging settings
+    Parameters:
+                name (str): Logger name
+    Returns: 
+                logger: logger instance
+    """
+    MSG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
+    DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+    logging.basicConfig(format=MSG_FORMAT, datefmt=DATETIME_FORMAT)
+    logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler(sys.stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
-    handler.setFormatter(logFormatter)
-    handler.setLevel(logging.INFO)
-    logger.addHandler(handler)
+
     return logger
 
 ######## funcion setup_logging
 def date_process(var:str)->str:
-     #definicion :  
-    #    Metodo para guardar e imprimir los logs 
-    #Parameters:
-    #    
-    #Returns:
-    #    dict : diccionario con nombre,fecha en date y string
-    
+    """ 
+    definicion :  
+        Metodo para guardar e imprimir los logs 
+    Parameters:
+        cadena de busqueda para la fecha 
+    Returns:
+        dict : diccionario con nombre,fecha en date y string
+    """
     now = datetime.now()
     date_now=now-timedelta(hours=5)
 
@@ -87,13 +89,14 @@ def date_process(var:str)->str:
 
 ######## transfor_basic
 def transfor_basic (df:DataFrame,typeTrans:str,listVal:List)->DataFrame:
-    #deinition :  
-    #    transformacion basica para df
-    #Parameters:
-    #   df : Dataframe de la capa bronce a silver 
-    #Returns:
-    #    df : Dataframe con las transformaciones Basicas 
-        
+    """
+    deinition :  
+        transformacion basica para df
+    Parameters:
+       df : Dataframe de la capa bronce a silver 
+    Returns:
+        df : Dataframe con las transformaciones Basicas 
+    """
     # transformation lower title
     if typeTrans == 'basic':
         for x in df.schema.names:
@@ -317,3 +320,6 @@ def valueRoot(value):
         valor = 'positivo'
         valor = float(value)
     return valor
+
+
+print("****** Version Git *********")

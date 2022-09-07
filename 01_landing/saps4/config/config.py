@@ -3,6 +3,7 @@ import json
 
 def conf_json ():
     json_file = '''
+    [
         { "name": "KNA1","partition_field": "d"},
         { "name": "KNVH","partition_field": "d"},
         { "name": "KNVV","partition_field": "d"},
@@ -110,14 +111,10 @@ def conf_json ():
         { "name": "KNVI","partition_field": "d"},
         { "name": "EKKO","partition_field": "d"},
         { "name": "EKPO","partition_field": "d"}
+    ]
     '''
     list_table = json.loads(json_file)
     return list_table
 
 
 print("****** conf_json  *********")
-
-# COMMAND ----------
-
-x=conf_json()
-print
