@@ -14,13 +14,14 @@
 # MAGIC 
 # MAGIC DROP DATABASE IF EXISTS uf CASCADE;
 # MAGIC create database uf;
-
-# COMMAND ----------
-
-# MAGIC %sql
+# MAGIC 
+# MAGIC DROP DATABASE IF EXISTS landing CASCADE;
+# MAGIC create database landing ;
+# MAGIC 
 # MAGIC DROP DATABASE IF EXISTS datagov CASCADE;
 # MAGIC create database datagov;
 
 # COMMAND ----------
 
-
+# MAGIC  %sql
+# MAGIC create database IF not EXISTS landing ;

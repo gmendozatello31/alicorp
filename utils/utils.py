@@ -307,7 +307,7 @@ def read_yaml(bucket:str,file:str)-> yml:
   
 
 ######## funcion save datos delta
-def save_delta (file_location_csv:str,name_file:str):
+def read_df (file_location_csv:str,name_file:str,partition:str, table:str,logger:logger) ->DataFrame:
     """ 
     definicion :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
@@ -316,8 +316,12 @@ def save_delta (file_location_csv:str,name_file:str):
     Returns:
         dict : diccionario con nombre,fecha en date y string
     """
+    
+    now = datetime.now()
+    date_current = now - timedelta(hours=5)
+    day = '{:02d}'.format(date_current.day)
+    
     # valor inicial de busqueda
-
     file_type = 'csv'
     infer_schema = 'false'
     first_row_is_header = 'true'
@@ -335,7 +339,19 @@ def save_delta (file_location_csv:str,name_file:str):
     df = df \
         .withColumn('CREATE_AT', f.unix_timestamp(f.lit(v_current), 'yyyy-MM-dd HH:mm:ss').cast("timestamp")) \
         .withColumn('ORIGIN_FILE', f.lit(name_file))
-    return dict_file
+    
+    if partition == 'm':
+        df = df.withColumn('YEAR_MONTH', f.lit(name_file[0:6]))
+    else:
+        df = df.withColumn('YEAR_MONTH_DAY', f.lit(name_file[0:8]))
+       
+    source_bronze= f'landing.{table}'
+    
+    for each in df.columns:
+        df = df.withColumnRenamed(each , each.strip())
+  
+    return  df 
+    
 
 
 def validateColumns(df:DataFrame)->DataFrame:
