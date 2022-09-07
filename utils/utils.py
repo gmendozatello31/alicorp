@@ -13,10 +13,36 @@ import pyspark.sql.functions as f
 import yaml as yml
 import logging
 
+######## funcion save datos delta
+def max_file_storage (path_storage:str)-> dict:
+    """ 
+    definicion :  
+        Metodo que retonar el maximo valor del archivo que se encuentra en el storage
+    Parameters:
+        str1 (str): ruta donde buscara la maxima fecha
+    Returns:
+        dict : diccionario con nombre,fecha en date y string
+    """
+    # valor inicial de busqueda
+    val= datetime(1999,1,1,0,0,0)
+    list=[]
+    list = dbutils.fs.ls(path_storage)
+    for list_process_csv in range(len(list)):
+        name=list[list_process_csv][1]
+        # day = f'{name[0:4]}-{name[4:6]}-{name[6:8]} {name[9:11]}:{name[11:13]}:{name[13:15]}'
+        # date = datetime.strptime(day, '%Y-%m-%d %H:%M:%S')
+        day = f'{name[0:8]}'
+        date = datetime.strptime(day, '%Y%m%d')
+        filter = f'{name[0:15]}'
+        if date >= val:
+            val=date
+            dict_file = {'name': name,'day': day,'date':date,'filter':filter}
+    return dict_file
 
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
-    """ definicion :  
+    """ 
+    definicion :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
     Parameters:
         str1 (str): ruta donde buscara la maxima fecha
@@ -41,7 +67,8 @@ def max_file_storage (path_storage:str)-> dict:
 
 ######## funcion setup_logging
 def init_logging(name):
-    """ definicion : 
+    """ 
+    definicion : 
         Init logging settings
     Parameters:
                 name (str): Logger name
@@ -90,7 +117,7 @@ def date_process(var:str)->str:
 ######## transfor_basic
 def transfor_basic (df:DataFrame,typeTrans:str,listVal:List)->DataFrame:
     """
-    deinition :  
+    definicion :  
         transformacion basica para df
     Parameters:
        df : Dataframe de la capa bronce a silver 
@@ -127,13 +154,14 @@ def transfor_basic (df:DataFrame,typeTrans:str,listVal:List)->DataFrame:
   
     
 def getColumnsToSelect(sourceTable:str)->List:
-    #deinition :  
-    #    Devuelve los select necesarios en cada capa para la tranformacion
-    #Parameters:
-    #   nombre de la tabla  
-    #Returns:
-    #    Lista de campos
-    
+    """
+    definicion :  
+        Devuelve los select necesarios en cada capa para la tranformacion
+    Parameters:
+       nombre de la tabla  
+    Returns:
+        Lista de campos
+    """
     listCols = ''
     listColsDelta = spark.sql("select * from " + sourceTable + " limit 1").schema.names
     columnsToSelect = ','.join(listColsDelta)
@@ -141,12 +169,14 @@ def getColumnsToSelect(sourceTable:str)->List:
     return columnsToSelect.lower()
 
 def getDate()->datetime:
-    #deinition :  
-    #    Devuelve fecha en formato date
-    #Parameters:
-    #   sin parametros
-    #Returns:
-    #    fecha
+    """ 
+    definicion :  
+        Devuelve fecha en formato date
+    Parameters:
+       sin parametros
+    Returns:
+        fecha
+    """
     
     now = datetime.now()
     stringDate = now.strftime("%d-%m-%Y")
@@ -155,13 +185,14 @@ def getDate()->datetime:
   
 
 def validateDate(df:DataFrame)->DataFrame:
-    #deinition :  
-    #    validacion de fecha en caso envie null 
-    #Parameters:
-    #   df 
-    #Returns:
-    #    df con validacion de campos
-    
+    """
+    definicion :  
+        validacion de fecha en caso envie null 
+    Parameters:
+       df 
+    Returns:
+        df con validacion de campos
+    """
     col_list = df.dtypes
 
     for x,y in col_list:
@@ -181,9 +212,10 @@ def validateDate(df:DataFrame)->DataFrame:
 #     return dsimCredenciales
 
 def getEmailCredentials():
-    #deinition :  
-    #    metodo de ayuda para el envio de correo
-    
+    """"
+    definicion :  
+        metodo de ayuda para el envio de correo
+    """
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{os.environ['SECRET_PROJECT']}/secrets/{os.environ['SECRET_SERVICE']}/versions/{os.environ['SECRET_VERSION']}"
     response = client.access_secret_version(request={'name':name})
@@ -266,13 +298,14 @@ def create_notebook(notebook_name, content):
 #def validateDate(df:DataFrame)->DataFrame:
 
 def read_yaml(bucket:str,file:str)-> yml:
-    #deinition :  
-    #    metodo para obtener un archivo yaml o un archivo json 
-    #Parameters:
-    #   ruta del archivo y el bucket
-    #Returns:
-    #    archivo que se encuentra en storage 
-    
+    """
+    definicion :  
+        metodo para obtener un archivo yaml o un archivo json 
+    Parameters:
+       ruta del archivo y el bucket
+    Returns:
+        archivo que se encuentra en storage 
+    """
     bucket_gcp = ''
     
     if(bucket=='data_s4'):
