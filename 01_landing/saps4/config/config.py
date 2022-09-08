@@ -20,7 +20,3 @@ def conf_json ():
 
 
 print("****** conf_json  *********")
-
-# COMMAND ----------
-
-
