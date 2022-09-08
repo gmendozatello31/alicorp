@@ -16,8 +16,32 @@ from pyspark.sql import SQLContext
 
 sqlContext = SQLContext(spark.sparkContext)
 
+def create_table (save_path:str,table_name:str):
+    """ 
+    definicion :  
+        Creacion de tabla de forma automatica
+    Parameters:
+        save_path (str): ruta de la tabla en storage
+        table_name (str): nombre de la tabla 
+    Returns:
+        
+    """
+    
+    spark.sql(f" drop table if exists {table_name}")
+    # spark.sql("CREATE TABLE " + table_name + " USING DELTA LOCATION '" + save_path + "'")
+    spark.sql(f" CREATE TABLE {table_name}  USING DELTA LOCATION '{save_path}'" )
+
 ######## funcion max_file_storage
 def existe_table (dataBase:str,table:str)-> bool:
+    """ 
+    definicion :  
+        Validamos si existe tabla
+    Parameters:
+        dataBase (str): base datos
+        table_name (str): tabla  
+    Returns:
+        bool : True si existe / False no existe
+    """
     table_names_in_db = sqlContext.tableNames(dataBase)
     table_exists = table in table_names_in_db
     return table_exists
@@ -316,7 +340,7 @@ def read_yaml(bucket:str,file:str)-> yml:
   
 
 ######## funcion save datos delta
-def read_df (file_location_csv:str,name_file:str,partition:str, table:str,logger:logger) ->DataFrame:
+def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) ->DataFrame:
     """ 
     definicion :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
@@ -354,12 +378,20 @@ def read_df (file_location_csv:str,name_file:str,partition:str, table:str,logger
     else:
         df = df.withColumn('YEAR_MONTH_DAY', f.lit(name_file[0:8]))
        
-    source_bronze= f'landing.{table}'
-    
     for each in df.columns:
         df = df.withColumnRenamed(each , each.strip())
+        
+    if ((partition == 'm') and ( day=='01' or day=='15' or day=='28' ) ):
+        proceso = 'tabla mensual'
+        df.write.mode('append').format('delta').save(path_delta)
+    elif ((partition == 'd'))  :
+        proceso = 'tabla diaria'
+        df.write.mode('append').format('delta').save(path_delta)
+    else :
+        proceso = 'sin registrar'
   
-    return  df 
+    return proceso
+    
     
 
 
