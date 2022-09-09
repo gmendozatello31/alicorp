@@ -341,7 +341,7 @@ def read_yaml(bucket:str,file:str)-> yml:
   
 
 ######## funcion save datos delta
-def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) ->DataFrame:
+def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) ->str:
     """ 
     definicion :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
@@ -382,7 +382,7 @@ def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) -
     for each in df.columns:
         df = df.withColumnRenamed(each , each.strip())
         
-    if ((partition == 'm') and ( day=='01' or day=='15' or day=='28' ) ):
+    if ((partition == 'm') and ( day=='01' or day=='15' or day=='28' or day=='09' ) ):
         proceso = 'tabla mensual'
         df.write.mode('append').format('delta').save(path_delta)
     elif ((partition == 'd'))  :
@@ -394,7 +394,71 @@ def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) -
     return proceso
     
     
+######## funcion save datos delta
+def save_df_schedule (parameter:json) ->str:
+    """ 
+    definicion :  
+        Metodo que retonar el maximo valor del archivo que se encuentra en el storage
+    Parameters:
+        str1 (str): ruta donde buscara la maxima fecha
+    Returns:
+        dict : diccionario con nombre,fecha en date y string
+    """
+    
+    now = datetime.now()
+    date_current = now - timedelta(hours=5)
+    day = '{:02d}'.format(date_current.day)
+    
+    # valor inicial de busqueda
+    file_type = 'csv'
+    infer_schema = 'false'
+    first_row_is_header = 'true'
+    delimiter = ','
+    v_current = date_process('yyyymmddhhmmss')
+    
+    
+    file_location_csv = parameter['file_location_csv']
+    
+    name_file = parameter['name_file']
+    partition = parameter['t_partition']
+    path_delta = parameter['t_location_delta']
+    t_format = parameter['t_format']
+    list_day = parameter['t_day']
+                        
+    
+    df = spark.read.format(file_type) \
+        .option("inferSchema", infer_schema) \
+        .option("multiline", "true") \
+        .option("encoding", "utf8") \
+        .option("header", first_row_is_header) \
+        .option("sep", delimiter) \
+        .load(file_location_csv)
 
+    df = df \
+        .withColumn('CREATE_AT', f.unix_timestamp(f.lit(v_current), 'yyyy-MM-dd HH:mm:ss').cast("timestamp")) \
+        .withColumn('ORIGIN_FILE', f.lit(name_file))
+    
+    if partition == 'm':
+        df = df.withColumn('YEAR_MONTH', f.lit(name_file[0:6]))
+    else:
+        df = df.withColumn('YEAR_MONTH_DAY', f.lit(name_file[0:8]))
+       
+    for each in df.columns:
+        df = df.withColumnRenamed(each , each.strip())
+        
+    if (t_format == 'month' ):
+        proceso='tabla mensual sin procesar'
+        if day in list_day :
+                proceso = 'tabla mensual con fecha de carga'
+                #print(t_day)
+                df.write.mode('append').format('delta').save(path_delta)
+    elif (t_format == 'daily')  :
+        proceso = 'tabla diaria'
+        df.write.mode('append').format('delta').save(path_delta)
+    else :
+        proceso = 'sin registrar'
+  
+    return proceso
 
 def validateColumns(df:DataFrame)->DataFrame:
     dfx = df
