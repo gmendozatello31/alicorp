@@ -112,4 +112,3 @@ for table_landing in list_table :
     except Exception as e:
         #Email("la capa Bronze de Customers_Hierarchy", str(e))
         logger.info(f'Error : {t_table}')
-
