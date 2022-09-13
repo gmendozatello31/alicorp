@@ -39,6 +39,19 @@ json_file = '''
                      "format":"month",
                      "day":["04","15","30","13"]
                     }
+         },
+         { "table": {
+                    "name": "VTTP",
+                    "partition_field": "D"
+                   },
+          "reprocess": {
+                     "active":"N",
+                     "days":"0"
+                     },
+         "schedule": {
+                     "format":"daily",
+                     "day":[]
+                    }
          }
     ]
     '''
