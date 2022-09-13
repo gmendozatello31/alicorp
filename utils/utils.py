@@ -18,28 +18,28 @@ sqlContext = SQLContext(spark.sparkContext)
 
 def create_table (save_path:str,table_name:str):
     """ 
-    definicion :  
+    Definición :  
         Creacion de tabla de forma automatica
-    Parameters:
+    Parámetros:
         save_path (str): ruta de la tabla en storage
         table_name (str): nombre de la tabla 
-    Returns:
+    Resultado:
         
     """
     
     spark.sql(f" drop table if exists {table_name}")
     # spark.sql("CREATE TABLE " + table_name + " USING DELTA LOCATION '" + save_path + "'")
-    spark.sql(f" CREATE TABLE {table_name}  USING DELTA LOCATION '{save_path}'" )
+    spark.sql(f" create table {table_name}  using delta location '{save_path}'" )
 
 ######## funcion max_file_storage
 def existe_table (dataBase:str,table:str)-> bool:
     """ 
-    definicion :  
+    Definición :  
         Validamos si existe tabla
-    Parameters:
+    Parámetros:
         dataBase (str): base datos
         table_name (str): tabla  
-    Returns:
+    Resultado:
         bool : True si existe / False no existe
     """
     table_names_in_db = sqlContext.tableNames(dataBase)
@@ -50,11 +50,11 @@ def existe_table (dataBase:str,table:str)-> bool:
 ######## funcion max_file_storage
 def max_file_storage (path_storage:str)-> dict:
     """ 
-    definicion :  
+    Definición :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
-    Parameters:
+    Parámetros:
         str1 (str): ruta donde buscara la maxima fecha
-    Returns:
+    Resultado:
         dict : diccionario con nombre,fecha en date y string
     """
     # valor inicial de busqueda
@@ -76,11 +76,11 @@ def max_file_storage (path_storage:str)-> dict:
 ######## funcion setup_logging
 def init_logging(name):
     """ 
-    definicion : 
+    Definición : 
         Init logging settings
-    Parameters:
+    Parámetros:
                 name (str): Logger name
-    Returns: 
+    Resultado: 
                 logger: logger instance
     """
     MSG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
@@ -95,11 +95,11 @@ def init_logging(name):
 ######## funcion setup_logging
 def date_process(var:str)->str:
     """ 
-    definicion :  
+    Definición :  
         Metodo para guardar e imprimir los logs 
-    Parameters:
+    Parámetros:
         cadena de busqueda para la fecha 
-    Returns:
+    Resultado:
         dict : diccionario con nombre,fecha en date y string
     """
     now = datetime.now()
@@ -125,11 +125,11 @@ def date_process(var:str)->str:
 ######## transfor_basic
 def transfor_basic (df:DataFrame,typeTrans:str,listVal:List)->DataFrame:
     """
-    definicion :  
+    Definición :  
         transformacion basica para df
-    Parameters:
+    Parámetros:
        df : Dataframe de la capa bronce a silver 
-    Returns:
+    Resultado:
         df : Dataframe con las transformaciones Basicas 
     """
     # transformation lower title
@@ -161,13 +161,13 @@ def transfor_basic (df:DataFrame,typeTrans:str,listVal:List)->DataFrame:
 
   
     
-def getColumnsToSelect(sourceTable:str)->List:
+def get_columnsToSelect(sourceTable:str)->List:
     """
-    definicion :  
+    Definición :  
         Devuelve los select necesarios en cada capa para la tranformacion
-    Parameters:
+    Parámetros:
        nombre de la tabla  
-    Returns:
+    Resultado:
         Lista de campos
     """
     listCols = ''
@@ -176,13 +176,13 @@ def getColumnsToSelect(sourceTable:str)->List:
     
     return columnsToSelect.lower()
 
-def getDate()->datetime:
+def get_date()->datetime:
     """ 
-    definicion :  
+    Definición :  
         Devuelve fecha en formato date
-    Parameters:
-       sin parametros
-    Returns:
+    Parámetros:
+       sin Parámetros
+    Resultado:
         fecha
     """
     
@@ -192,13 +192,13 @@ def getDate()->datetime:
     return date
   
 
-def validateDate(df:DataFrame)->DataFrame:
+def validate_date(df:DataFrame)->DataFrame:
     """
-    definicion :  
+    Definición :  
         validacion de fecha en caso envie null 
-    Parameters:
+    Parámetros:
        df 
-    Returns:
+    Resultado:
         df con validacion de campos
     """
     col_list = df.dtypes
@@ -219,9 +219,9 @@ def validateDate(df:DataFrame)->DataFrame:
 #     dsimCredenciales = eval(dbutils.secrets.getBytes(scope="alicorp_dsim", key="SECRET"))
 #     return dsimCredenciales
 
-def getEmailCredentials():
+def get_email_credentials():
     """"
-    definicion :  
+    Definición :  
         metodo de ayuda para el envio de correo
     """
     client = secretmanager.SecretManagerServiceClient()
@@ -239,7 +239,7 @@ class Email:
     #    metodo de ayuda para el envio de correo
     
       def __init__(self,filename, error):
-        secret = getEmailCredentials()
+        secret = get_email_credentials()
         self.server = smtplib.SMTP(host='smtp.gmail.com',port='587')
         html = f'''
           <html>
@@ -280,38 +280,17 @@ class Email:
 # print(email_from,email_pass)
 
 
-def create_notebook(notebook_name, content):
-    ctx = json.loads(dbutils.notebook.entry_point.getDbutils().notebook().getContext().toJson())
-    host_name = ctx['extraContext']['api_url']
-    host_token = ctx['extraContext']['api_token']
-    notebook_path = "/".join(ctx['extraContext']['notebook_path'].split("/")[:-1])
-    notebook_path = f"{notebook_path}/create_tables/{notebook_name}"
-    new_path = os.path.join(os.path.dirname(notebook_path), notebook_name)
-
-    data = {
-      "content": base64.b64encode(content.encode("utf-8")).decode('ascii'),
-      "path": new_path,
-      "language": "PYTHON",
-      "overwrite": True,
-      "format": "SOURCE"
-    }
-    response = requests.post(
-        f'{host_name}/api/2.0/workspace/import',
-        headers={'Authorization': f'Bearer {host_token}'},
-        json = data
-      ).json()
-    return response
   
     
 #def validateDate(df:DataFrame)->DataFrame:
 
 def read_yaml(bucket:str,file:str)-> yml:
     """
-    definicion :  
+    Definición :  
         metodo para obtener un archivo yaml o un archivo json 
-    Parameters:
+    Parámetros:
        ruta del archivo y el bucket
-    Returns:
+    Resultado:
         archivo que se encuentra en storage 
     """
     bucket_gcp = ''
@@ -342,11 +321,11 @@ def read_yaml(bucket:str,file:str)-> yml:
 ######## funcion save datos delta
 def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) ->str:
     """ 
-    definicion :  
+    Definición :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
-    Parameters:
+    Parámetros:
         str1 (str): ruta donde buscara la maxima fecha
-    Returns:
+    Resultado:
         dict : diccionario con nombre,fecha en date y string
     """
     
@@ -396,11 +375,11 @@ def save_df (file_location_csv:str,name_file:str,partition:str,path_delta:str) -
 ######## funcion save datos delta
 def save_df_schedule (parameter:json) ->str:
     """ 
-    definicion :  
+    Definición :  
         Metodo que retonar el maximo valor del archivo que se encuentra en el storage
-    Parameters:
+    Parámetros:
         str1 (str): ruta donde buscara la maxima fecha
-    Returns:
+    Resultado:
         dict : diccionario con nombre,fecha en date y string
     """
     
@@ -462,28 +441,6 @@ def save_df_schedule (parameter:json) ->str:
   
     return proceso
 
-def validateColumns(df:DataFrame)->DataFrame:
-    dfx = df
-    for col_name in df.columns: 
-    #print(col_name)
-        if "/" not in col_name:
-            continue
-        else:
-            #print(col_name)
-            new_col_name = col_name.replace('/', '')
-            #print(new_col_name)
-            dfx = dfx.withColumn(new_col_name,f.col(col_name))
-            dfx = dfx.drop(col_name)
-    return dfx
-  
-def valueRoot(value):
-    if  value[-1] == '-':
-        valor = 'negativo'
-        valor = -1* float(value[:-1])
-    else: 
-        valor = 'positivo'
-        valor = float(value)
-    return valor
 
 
 print("****** Version Git *********")

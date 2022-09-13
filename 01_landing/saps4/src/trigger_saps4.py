@@ -52,6 +52,13 @@ for table_landing in list_table :
         #se graba el df en formato delta en el storage
         process= save_df_schedule(parameter)
         logger.info(f'{process}')
+        
+        #Validamos si existe la tabla creada en databricks
+        exis_table = existe_table('landing',t_table)
+        
+        if exis_table == False :
+            create_table(t_location_delta,f'{t_capa}.{t_table}')
+            logger.info(f'Creacion de tabla : {t_table}')
     
     except Exception as e:
         #Email("la capa Bronze de Customers_Hierarchy", str(e))
