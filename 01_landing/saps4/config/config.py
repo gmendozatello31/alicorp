@@ -46,8 +46,21 @@ json_file = '''
                     "partition_field": "M"
                    },
           "reproces": {
-                     "active":"N",
-                     "days":"0"
+                     "active":"S",
+                     "days":"10"
+                     },
+         "schedule": {
+                     "format":"month",
+                     "day":["04","15","30","09"]
+                    }
+         },
+         { "table": {
+                    "name": "KNVV",
+                    "partition_field": "M"
+                   },
+          "reproces": {
+                     "active":"S",
+                     "days":"5"
                      },
          "schedule": {
                      "format":"month",

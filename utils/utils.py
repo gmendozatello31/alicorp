@@ -1,5 +1,4 @@
 # Databricks notebook source
-# Databricks notebook source
 from datetime import datetime,timedelta
 from delta.tables import *
 from pyspark.sql import DataFrame
@@ -454,6 +453,9 @@ def save_df_schedule (parameter:json) ->str:
                 df.write.mode('append').format('delta').save(path_delta)
     elif (t_format == 'daily')  :
         proceso = 'tabla diaria'
+        df.write.mode('append').format('delta').save(path_delta)
+    elif (t_format == 'reproces')  :
+        proceso = 'reproceso '
         df.write.mode('append').format('delta').save(path_delta)
     else :
         proceso = 'sin registrar'
