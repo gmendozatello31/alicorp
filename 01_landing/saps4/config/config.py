@@ -5,7 +5,7 @@ json_file = '''
                     "name": "KNA1",
                     "partition_field": "D"
                    },
-          "reproces": {
+          "reprocess": {
                      "active":"N",
                      "days":"0"
                      },
@@ -18,26 +18,26 @@ json_file = '''
                     "name": "TVFKT",
                     "partition_field": "M"
                    },
-          "reproces": {
+          "reprocess": {
                      "active":"S",
                      "days":"10"
                      },
          "schedule": {
                      "format":"month",
-                     "day":["04","15","30","09"]
+                     "day":["04","15","30","13"]
                     }
          },
          { "table": {
                     "name": "KNVV",
                     "partition_field": "M"
                    },
-          "reproces": {
+          "reprocess": {
                      "active":"S",
                      "days":"5"
                      },
          "schedule": {
                      "format":"month",
-                     "day":["04","15","30","09"]
+                     "day":["04","15","30","13"]
                     }
          }
     ]
